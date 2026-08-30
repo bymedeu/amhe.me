@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://amhe.me/sitemap.xml

@@ -1,0 +1,68 @@
+# Amadéo Héaulme
+
+> Computer engineering student at EPITA focused on artificial intelligence,
+> systems programming, scientific computing, and research-oriented software.
+
+Canonical portfolio: https://amhe.me/
+
+## Current work and education
+
+- Software Engineering Intern at the European Space Agency (2026–present).
+- Teaching Assistant at EPITA (September 2025–January 2028).
+- Computer Engineering Student at EPITA (2023–2028).
+- Exchange semester at Ewha Womans University (February–June 2025).
+
+## Technical direction
+
+Amadéo is developing a profile that combines first-principles machine-learning
+understanding with modern C++, systems engineering, numerical computing, and
+scientific software. His target work is research-oriented engineering in AI,
+ML systems, and AI for science.
+
+Core subjects include Python, C, C++, Java, mathematics, machine learning,
+Linux, algorithms, compilers, networking, testing, and performance analysis.
+
+## Selected projects
+
+- Aurora: From-scratch machine-learning components progressing from numerical
+  foundations through autograd, attention, and transformers, with documented
+  and tested milestones. Source: https://github.com/bymedeu/aurora
+- MyStarCeiling: A C++23 astronomy and scientific-computing system for
+  reconstructing, simulating, validating, and rendering night skies from real
+  stellar data.
+- Tiger Compiler: A C++ compiler project spanning parsing, AST transformations,
+  binding, type checking, optimization, and LLVM translation.
+- Generic Image Library: A C++20 concepts-based image library with reusable
+  algorithms, morphological erosion, correctness tests, and benchmarks.
+- 42sh: A POSIX-oriented shell in C covering tokenization, recursive parsing,
+  expansions, pipelines, redirections, control flow, and built-ins.
+- Snow Plow Optimizer: A graph-based route-optimization system using
+  OpenStreetMap data to assign streets, minimize completion time, calculate
+  costs, and generate maps.
+- OCR Word-Search Solver: A C image-processing pipeline that reconstructs a
+  character grid from a photographed puzzle and finds its words.
+- Memory Allocator: A custom C dynamic-memory allocator exploring pages, blocks,
+  alignment, allocation strategies, and recycling.
+- HTTP Server: A compact HTTP server in C covering sockets, requests, responses,
+  configuration, and concurrency.
+- MiniMake: A C implementation of core Make behavior: rule and variable parsing,
+  dependency-graph resolution, and selective command execution.
+
+The portfolio contains 26 projects in total. Some academic repositories remain
+private to respect EPITA source-distribution and academic-integrity rules; the
+site distinguishes public, private, and school-restricted work.
+
+## Profiles and documents
+
+- GitHub: https://github.com/bymedeu
+- LinkedIn: https://www.linkedin.com/in/amadeoheaulme/
+- English CV: https://amhe.me/public/cv/cv-amadeo-en.pdf
+- French CV: https://amhe.me/public/cv/cv-amadeo-fr.pdf
+- Contact: amadeo.heaulme@epita.fr
+
+## Site behavior
+
+The root HTML contains a semantic non-JavaScript summary. JavaScript enhances it
+with instant English/French switching, a filterable project index, detailed
+project views, and an interactive résumé. Hash-based routing keeps every view
+compatible with static hosting at the amhe.me root domain.

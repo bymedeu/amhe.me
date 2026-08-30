@@ -1,0 +1,144 @@
+@media (max-width: 850px) {
+  .nav { grid-template-columns: 1fr auto; }
+  .nav-links { position: absolute; top: 72px; left: 0; right: 0; display: none; padding: 22px var(--pad) 28px; flex-direction: column; align-items: flex-start; gap: 18px; border-bottom: 1px solid var(--line); background: rgba(5,5,5,.98); }
+  .nav-links.open { display: flex; }
+  .nav-cta { display: none; }
+  .menu-toggle { display: block; }
+  .principle-grid,.about-grid { grid-template-columns: 1fr; }
+  .principle-notes { margin-top: 15px; }
+  .section-heading { grid-template-columns: 1fr; gap: 22px; }
+  .about-main,.skills { max-width: 690px; }
+  .footer-inner { grid-template-columns: 1fr 1fr; }
+  .footer-inner > a:not(.brand) { display: none; }
+  .detail-hero,.detail-grid,.implementation-section,.resource-section,.resume-hero,.chronology-heading,.resume-interests { grid-template-columns: 1fr; }
+  .github-snapshot-grid,.github-languages { grid-template-columns: 1fr; }
+  .detail-art { order: -1; }
+  .repository-panel { align-items: flex-start; flex-direction: column; }
+  .repository-actions { width: 100%; }
+  .resume-downloads { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .resume-downloads .section-kicker { grid-column: 1/-1; }
+  .resume-directory-grid { grid-template-columns: 1fr; }
+  .resume-directory[data-active-filter="education"] .resume-group,
+  .resume-directory[data-active-filter="experience"] .resume-group { grid-column: auto; width: 100%; }
+  .resume-interests-compact .interest-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .home-work .featured-projects { grid-template-columns: 1fr 1fr; }
+  .home-intro-grid { grid-template-columns: minmax(0,1fr) 160px; gap: 35px; }
+  .corona-switch-wrap { min-height: 210px; }
+  .project-index .all-projects { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 650px) {
+  .hero { align-items: flex-start; text-align: left; }
+  .home-intro h1 { font-size: clamp(48px,14vw,68px); }
+  .home-links { gap: 13px 20px; }
+  .home-intro-grid { grid-template-columns: 1fr; }
+  .corona-switch-wrap { min-height: 170px; place-items: start center; padding-top: 10px; }
+  .corona-toggle { width: 122px; }
+  .current-row { grid-template-columns: 1fr; gap: 5px; }
+  .current-row time { text-align: left; }
+  .home-work .featured-projects { grid-template-columns: 1fr; }
+  .compact-heading-row { align-items: flex-start; flex-direction: column; }
+  .hero h1 { font-size: clamp(48px,15vw,72px); letter-spacing: -.06em; }
+  .hero-actions { width: 100%; }
+  .hero-actions .button { flex: 1; }
+  .hero-visual { width: calc(100% + (2 * var(--pad))); margin-left: calc(-1 * var(--pad)); border-radius: 0; }
+  .orbit-two { width: 370px; height: 370px; }
+  .satellite-one { --orbit-size: 170px; }
+  .satellite-two { --orbit-size: 235px; }
+  .satellite-three { --orbit-size: 300px; }
+  .featured-projects,.all-projects { grid-template-columns: 1fr; }
+  .project-index .all-projects { grid-template-columns: 1fr; }
+  .project-card-featured { grid-column: auto; }
+  .project-card-featured .project-visual,.project-visual { height: 230px; }
+  .project-description { min-height: auto; }
+  .project-content { padding: 20px 17px 17px; }
+  .private-label { padding: 0 7px; font-size: 7px; }
+  .contact-card { min-height: 540px; }
+  .contact-links { align-items: flex-start; flex-direction: column; gap: 18px; }
+  .projects-hero h1 { font-size: clamp(50px,15vw,74px); }
+  .filter-header { align-items: flex-start; }
+  .filter-header > div { flex-direction: column; gap: 7px; }
+  .filter-list { flex-wrap: nowrap; overflow-x: auto; margin-inline: calc(-1 * var(--pad)); padding-inline: var(--pad); scrollbar-width: none; }
+  .filter-list::-webkit-scrollbar { display: none; }
+  .filter-chip { flex: none; }
+  .visibility-filter { width: 100%; overflow-x: auto; scrollbar-width: none; }
+  .visibility-filter::-webkit-scrollbar { display: none; }
+  .visibility-option { flex: none; }
+  .timeline-filters {
+    width: 100%;
+    justify-content: stretch;
+    overflow-x: auto;
+  }
+  .timeline-filters button {
+    flex: 1 0 auto;
+    justify-content: center;
+  }
+  .resume-hero.resume-hero-compact { gap: 24px; }
+  .resume-hero-compact .resume-downloads { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .resume-directory-heading { align-items: flex-start; flex-direction: column; gap: 20px; }
+  .resume-directory .timeline-filters { margin: 0; }
+  .resume-entry-card > summary {
+    grid-template-columns: 44px minmax(0,1fr) 28px;
+    gap: 11px;
+    min-height: 76px;
+    padding: 12px;
+  }
+  .resume-organization-mark { width: 44px; height: 44px; }
+  .resume-entry-meta { grid-column: 2; grid-row: 2; justify-items: start; display: flex; align-items: center; }
+  .resume-entry-toggle { grid-column: 3; grid-row: 1 / span 2; }
+  .resume-entry-expanded { padding: 3px 14px 17px; }
+  .detail-heading h1 { font-size: clamp(48px,14vw,72px); }
+  .detail-art { height: 260px; }
+  .repository-actions .button { width: 100%; }
+  .github-metrics { grid-template-columns: 1fr 1fr; }
+  .github-metric { min-height: 125px; padding: 16px; }
+  .language-legend { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .timeline-rail {
+    left: 13px;
+    transform: translateX(-50%);
+  }
+  .timeline-event {
+    grid-template-columns: 28px minmax(0,1fr);
+    min-height: 0;
+  }
+  .timeline-event-left .timeline-card-shell,
+  .timeline-event-right .timeline-card-shell {
+    grid-column: 2;
+    --timeline-side-tilt: 0deg;
+  }
+  .timeline-node {
+    top: 29px;
+    left: 13px;
+  }
+  .timeline-event-left .timeline-card::after,
+  .timeline-event-right .timeline-card::after {
+    right: 100%;
+    left: auto;
+    width: 17px;
+    transform: none;
+  }
+  .timeline-card-shell {
+    transform: none !important;
+  }
+  .timeline-card > summary {
+    padding: 20px;
+  }
+  .timeline-expanded {
+    padding: 0 20px 20px;
+  }
+  .timeline-meta {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 7px;
+  }
+}
+
+@media (max-width: 420px) {
+  .language-switch { margin-right: 2px; }
+  .hero-actions { flex-direction: column; }
+  .project-title-row { flex-wrap: wrap; }
+  .footer-inner { min-height: 105px; }
+  .resume-downloads,.interest-grid { grid-template-columns: 1fr; }
+  .resume-hero-compact .resume-downloads,
+  .resume-interests-compact .interest-grid { grid-template-columns: 1fr; }
+}
