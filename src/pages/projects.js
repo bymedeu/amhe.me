@@ -1,8 +1,10 @@
 import { renderProjectCard } from "../components/project-card.js";
 import { getTopicTags, projectLanguageTags, projects } from "../data/projects.js";
-import { projectFilterUrl } from "../router.js";
+import { projectFilterUrl, parseProjectFilters } from "../router.js";
 import { githubSnapshot, projectStats } from "../data/github-stats.js";
 import { siteConfig } from "../../site.config.js";
+
+import { normalizeFilters, matchingProjects, toggleFilter } from "../data/project-filters.js";
 
 export function renderProjectsPage(i18n, route) {
   return `
@@ -11,81 +13,54 @@ export function renderProjectsPage(i18n, route) {
       <h1 class="reveal reveal-delay-1">${i18n.t("projects.title")}</h1>
     </section>
     ${renderGithubSnapshot(i18n)}
+    <p class="sr-only" data-filter-announcement role="status" aria-live="polite" aria-atomic="true"></p>
     ${renderProjectIndex(i18n, route)}
   `;
 }
 
 export function renderProjectIndex(i18n, route) {
   const { t } = i18n;
-  const tags = getTopicTags();
-  const activeTag = tags.includes(route.tag) ? route.tag : "all";
-  const activeLanguage = projectLanguageTags.includes(route.language) ? route.language : "all";
-  const activeVisibility = ["public", "private"].includes(route.visibility) ? route.visibility : "all";
-  const matchesTag = (project) => activeTag === "all" || project.tags.includes(activeTag);
-  const matchesLanguage = (project) => activeLanguage === "all" || project.tags.includes(activeLanguage);
-  const matchesVisibility = (project) => activeVisibility === "all"
-    || (activeVisibility === "public" ? project.repository.access === "public" : project.repository.access !== "public");
-  const visibleProjects = projects.filter((project) => matchesTag(project) && matchesLanguage(project) && matchesVisibility(project));
-  const filtersAreClear = activeTag === "all" && activeLanguage === "all" && activeVisibility === "all";
-  const totalSourceLines = visibleProjects.reduce((total, project) => total + (projectStats[project.id]?.codebaseLines ?? 0), 0);
-
+  const filters = normalizeFilters(route);
+  const visibleProjects = matchingProjects(filters);
+  const totalSourceLines = visibleProjects.reduce((sum, project) => sum + (projectStats[project.id]?.codebaseLines ?? 0), 0);
+  const control = (key, label, next, active, count, disabled = false, className = "filter-chip") =>
+    `<button type="button" data-project-filter data-filter-key="${key}" data-filter-href="${projectFilterUrl(next)}"
+      class="${className} ${active ? "active" : ""}" aria-pressed="${active}" ${disabled ? "disabled" : ""}>${label}<span>${count}</span></button>`;
+  const group = (key, values, label, allLabel) => `
+    <div class="project-filter-group reveal">
+      <p>${label}</p><div class="filter-list" role="group" aria-label="${label}">
+        ${control(key + "-all", allLabel, { ...filters, [key]: [] }, !filters[key].length, matchingProjects({ ...filters, [key]: [] }).length)}
+        ${values.map((value) => {
+          const selected = filters[key].includes(value);
+          const next = toggleFilter(filters, key, value);
+          const count = selected ? visibleProjects.length : matchingProjects(next).length;
+          return control(key + "-" + value, t(`tags.${value}`), next, selected, count, !selected && count === 0);
+        }).join("")}
+      </div>
+    </div>`;
   return `
     <section class="project-index container">
       <div class="filter-header reveal">
-        <div>
-          <p class="section-kicker">${t("projects.filter")}</p>
-          <p class="result-count" aria-live="polite"><span>${t("projects.count")(visibleProjects.length)}</span><i>·</i><span title="${t("projects.sourceLinesNote")}">${t("projects.sourceLines")(totalSourceLines)}</span></p>
+        <div><p class="section-kicker">${t("projects.filter")}</p>
+          <p class="result-count"><span>${t("projects.count")(visibleProjects.length)}</span><i>·</i><span title="${t("projects.sourceLinesNote")}">${t("projects.sourceLines")(totalSourceLines)}</span></p>
         </div>
-        <a data-project-filter class="clear-filter ${filtersAreClear ? "disabled" : ""}" href="${projectFilterUrl()}">× ${t("projects.clearFilters")}</a>
+        <button type="button" data-project-filter data-filter-key="clear" data-filter-href="${projectFilterUrl()}" class="clear-filter">× ${t("projects.clearFilters")}</button>
       </div>
       <div class="visibility-filter reveal" role="group" aria-label="${t("projects.visibility")}">
-        ${renderVisibilityFilter("all", t("projects.allRepositories"), projects, activeTag, activeLanguage, activeVisibility)}
-        ${renderVisibilityFilter("public", t("projects.publicRepositories"), projects, activeTag, activeLanguage, activeVisibility)}
-        ${renderVisibilityFilter("private", t("projects.privateRepositories"), projects, activeTag, activeLanguage, activeVisibility)}
+        ${["all", "public", "private"].map((visibility) => {
+          const next = { ...filters, visibility };
+          const count = matchingProjects(next).length;
+          return control("visibility-" + visibility, t(`projects.${visibility === "all" ? "all" : visibility}Repositories`), next, filters.visibility === visibility, count,
+            count === 0 && visibility !== filters.visibility, "visibility-option");
+        }).join("")}
       </div>
-      <div class="project-filter-group reveal">
-        <p>${t("projects.programmingLanguage")}</p>
-        <div class="filter-list" role="list" aria-label="${t("projects.programmingLanguage")}">
-          <a data-project-filter href="${projectFilterUrl(activeTag, activeVisibility)}" class="filter-chip ${activeLanguage === "all" ? "active" : ""}" aria-current="${activeLanguage === "all"}">${t("projects.allLanguages")}<span>${projects.filter((project) => matchesTag(project) && matchesVisibility(project)).length}</span></a>
-          ${projectLanguageTags.map((language) => {
-            const count = projects.filter((project) => project.tags.includes(language) && matchesTag(project) && matchesVisibility(project)).length;
-            return `<a data-project-filter href="${projectFilterUrl(activeTag, activeVisibility, language)}" class="filter-chip ${activeLanguage === language ? "active" : ""}" aria-current="${activeLanguage === language}">${t(`tags.${language}`)}<span>${count}</span></a>`;
-          }).join("")}
-        </div>
-      </div>
-      <div class="project-filter-group reveal">
-        <p>${t("projects.topics")}</p>
-        <div class="filter-list" role="list" aria-label="${t("projects.topics")}">
-          <a data-project-filter href="${projectFilterUrl("all", activeVisibility, activeLanguage)}" class="filter-chip ${activeTag === "all" ? "active" : ""}" aria-current="${activeTag === "all"}">${t("projects.allTopics")}<span>${projects.filter((project) => matchesLanguage(project) && matchesVisibility(project)).length}</span></a>
-          ${tags.map((tag) => {
-            const count = projects.filter((project) => project.tags.includes(tag) && matchesLanguage(project) && matchesVisibility(project)).length;
-            return `<a data-project-filter href="${projectFilterUrl(tag, activeVisibility, activeLanguage)}" class="filter-chip ${activeTag === tag ? "active" : ""}" aria-current="${activeTag === tag}">${t(`tags.${tag}`)}<span>${count}</span></a>`;
-          }).join("")}
-        </div>
-      </div>
+      ${group("languages", projectLanguageTags, t("projects.programmingLanguage"), t("projects.allLanguages"))}
+      ${group("tags", getTopicTags(), t("projects.topics"), t("projects.allTopics"))}
       <div class="all-projects">
-        ${visibleProjects.length
-          ? visibleProjects.map((project) => renderProjectCard(project, i18n, {
-            filterVisibility: activeVisibility,
-            filterTag: activeTag,
-            filterLanguage: activeLanguage,
-          })).join("")
+        ${visibleProjects.length ? visibleProjects.map((project) => renderProjectCard(project, i18n, { filters })).join("")
           : `<p class="empty-state">${t("projects.empty")}</p>`}
       </div>
-    </section>
-  `;
-}
-
-function renderVisibilityFilter(visibility, label, allProjects, activeTag, activeLanguage, activeVisibility) {
-  const count = allProjects.filter((project) => {
-    const tagMatches = activeTag === "all" || project.tags.includes(activeTag);
-    const languageMatches = activeLanguage === "all" || project.tags.includes(activeLanguage);
-    const visibilityMatches = visibility === "all"
-      || (visibility === "public" ? project.repository.access === "public" : project.repository.access !== "public");
-    return tagMatches && languageMatches && visibilityMatches;
-  }).length;
-
-  return `<a data-project-filter href="${projectFilterUrl(activeTag, visibility, activeLanguage)}" class="visibility-option ${activeVisibility === visibility ? "active" : ""}" aria-current="${activeVisibility === visibility}">${label}<span>${count}</span></a>`;
+    </section>`;
 }
 
 export function setupProjectsPage(root, i18n, setupIndexInteractions = () => {}) {
@@ -102,7 +77,10 @@ function bindProjectFilters(scope, i18n, setupIndexInteractions) {
       if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
       event.preventDefault();
 
-      const href = link.getAttribute("href");
+      if (link.disabled) return;
+      const focusKey = link.dataset.filterKey;
+      const openIds = [...scope.querySelectorAll(".project-card[open]")].map((entry) => entry.dataset.project);
+      const href = link.dataset.filterHref ?? link.getAttribute("href");
       const route = parseProjectFilterHref(href);
       const currentIndex = document.querySelector(".project-index");
       if (!currentIndex) return;
@@ -112,8 +90,13 @@ function bindProjectFilters(scope, i18n, setupIndexInteractions) {
       template.innerHTML = renderProjectIndex(i18n, route).trim();
       const nextIndex = template.content.firstElementChild;
       currentIndex.replaceWith(nextIndex);
+      const announcement = document.querySelector("[data-filter-announcement]");
+      if (announcement) announcement.textContent = i18n.t("projects.count")(matchingProjects(route).length);
       bindProjectFilters(nextIndex, i18n, setupIndexInteractions);
       setupIndexInteractions(nextIndex);
+      nextIndex.querySelectorAll(".project-card").forEach((entry) => { entry.open = openIds.includes(entry.dataset.project); });
+      const focusTarget = [...nextIndex.querySelectorAll("[data-filter-key]")].find((item) => item.dataset.filterKey === focusKey);
+      (focusTarget ?? nextIndex.querySelector("[data-filter-key=clear]"))?.focus({ preventScroll: true });
     });
   });
 }
@@ -123,9 +106,7 @@ function parseProjectFilterHref(href) {
   const params = new URLSearchParams(query);
   return {
     page: "projects",
-    tag: params.get("tag") || "all",
-    language: params.get("language") || "all",
-    visibility: params.get("visibility") || "all",
+    ...parseProjectFilters(params),
   };
 }
 

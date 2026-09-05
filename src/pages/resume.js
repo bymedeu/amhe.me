@@ -1,3 +1,4 @@
+import { isCurrent, formatPeriod } from "../data/periods.js";
 import { icons } from "../components/icons.js";
 import { resume } from "../data/resume.js";
 import { getLocalized, getProjectById, getProjectName } from "../data/projects.js";
@@ -10,7 +11,6 @@ export function renderResumePage(i18n) {
     { key: "education", entries: sortEntries(resume.education) },
     { key: "experience", entries: sortEntries(resume.experience) },
   ];
-  const entryCount = groups.reduce((total, group) => total + group.entries.length, 0);
 
   return `
     <article class="resume-page resume-container container">
@@ -31,11 +31,6 @@ export function renderResumePage(i18n) {
             <p class="section-kicker">${t("resume.timelineKicker")}</p>
             <h2>${t("resume.timelineTitle")}</h2>
           </div>
-          <div class="timeline-filters" role="group" aria-label="${t("resume.filterLabel")}">
-            <button class="active" type="button" data-resume-filter="all" aria-pressed="true">${t("resume.filterAll")}<span>${entryCount}</span></button>
-            <button type="button" data-resume-filter="education" aria-pressed="false">${t("resume.filterEducation")}<span>${resume.education.length}</span></button>
-            <button type="button" data-resume-filter="experience" aria-pressed="false">${t("resume.filterJobs")}<span>${resume.experience.length}</span></button>
-          </div>
         </div>
 
         <div class="resume-directory-grid">
@@ -54,55 +49,8 @@ export function renderResumePage(i18n) {
 }
 
 export function setupResumePage(root) {
-  setupResumeFilters(root);
   setupEntryPanels(root);
   setupEntryMotion(root);
-}
-
-function setupResumeFilters(root) {
-  const directory = root.querySelector("[data-resume-directory]");
-  const buttons = [...root.querySelectorAll("[data-resume-filter]")];
-  const groups = [...root.querySelectorAll("[data-resume-group]")];
-  if (!directory || !buttons.length || !groups.length) return;
-
-  buttons.forEach((button) => {
-    button.addEventListener("click", () => {
-      const filter = button.dataset.resumeFilter;
-      if (button.classList.contains("active")) return;
-
-      const firstRects = new Map(
-        groups.filter((group) => !group.hidden).map((group) => [group, group.getBoundingClientRect()])
-      );
-
-      buttons.forEach((candidate) => {
-        const active = candidate === button;
-        candidate.classList.toggle("active", active);
-        candidate.setAttribute("aria-pressed", String(active));
-      });
-
-      groups.forEach((group) => {
-        group.getAnimations().forEach((animation) => animation.cancel());
-        group.hidden = filter !== "all" && group.dataset.resumeGroup !== filter;
-      });
-      directory.dataset.activeFilter = filter;
-
-      if (prefersReducedMotion() || !Element.prototype.animate) return;
-
-      groups.filter((group) => !group.hidden).forEach((group, index) => {
-        const first = firstRects.get(group);
-        const last = group.getBoundingClientRect();
-        const translateX = first ? first.left - last.left : 0;
-        const translateY = first ? first.top - last.top : 14;
-        group.animate(
-          [
-            { opacity: first ? 1 : 0, transform: `translate3d(${translateX}px,${translateY}px,${first ? 0 : -30}px) scale(${first ? 1 : .985})` },
-            { opacity: 1, transform: "translate3d(0,0,0) scale(1)" },
-          ],
-          { duration: 440, delay: index * 45, easing: "cubic-bezier(.16,1,.3,1)" }
-        );
-      });
-    });
-  });
 }
 
 function setupEntryPanels(root) {
@@ -170,7 +118,7 @@ function renderResumeEntry(entry, i18n) {
 
   return `
     <div class="resume-entry-shell${entry.secondary ? " resume-entry-secondary" : ""}" data-resume-entry>
-      <details class="resume-entry-card${entry.current ? " resume-entry-current" : ""}">
+      <details class="resume-entry-card${isCurrent(entry.period) ? " resume-entry-current" : ""}">
         <summary>
           ${renderOrganizationMark(entry)}
           <span class="resume-entry-copy">
@@ -178,8 +126,8 @@ function renderResumeEntry(entry, i18n) {
             <span>${entry.organization}${location ? ` · ${location}` : ""}</span>
           </span>
           <span class="resume-entry-meta">
-            <time>${getLocalized(entry.period, language)}</time>
-            ${entry.current ? `<em>${t("resume.current")}</em>` : ""}
+            <time>${formatPeriod(entry.period, language)}</time>
+            ${isCurrent(entry.period) ? `<em>${t("resume.current")}</em>` : ""}
           </span>
           <i class="resume-entry-toggle" aria-hidden="true">+</i>
         </summary>

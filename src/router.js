@@ -1,3 +1,4 @@
+import { normalizeFilters } from "./data/project-filters.js";
 export function getRoute() {
   const rawHash = window.location.hash.slice(1) || "/";
   const [path, query = ""] = rawHash.split("?");
@@ -6,9 +7,7 @@ export function getRoute() {
   if (path === "/projects") {
     return {
       page: "projects",
-      tag: params.get("tag") || "all",
-      language: params.get("language") || "all",
-      visibility: params.get("visibility") || "all",
+      ...parseProjectFilters(params),
     };
   }
 
@@ -27,11 +26,20 @@ export function getRoute() {
   return { page: "home", section };
 }
 
+export function parseProjectFilters(params) {
+  return normalizeFilters({
+    tags: params.getAll("tag"), languages: params.getAll("language"),
+    visibility: params.get("visibility"),
+  });
+}
+
 export function projectFilterUrl(tag = "all", visibility = "all", language = "all") {
+  const state = normalizeFilters(typeof tag === "object" && !Array.isArray(tag)
+    ? tag : { tags: tag, visibility, languages: language });
   const params = new URLSearchParams();
-  if (tag !== "all") params.set("tag", tag);
-  if (language !== "all") params.set("language", language);
-  if (visibility !== "all") params.set("visibility", visibility);
+  state.tags.forEach((value) => params.append("tag", value));
+  state.languages.forEach((value) => params.append("language", value));
+  if (state.visibility !== "all") params.set("visibility", state.visibility);
   const query = params.toString();
   return `#/projects${query ? `?${query}` : ""}`;
 }
@@ -42,5 +50,9 @@ export function projectDetailUrl(id) {
 
 export function startRouter(onRouteChange) {
   window.addEventListener("hashchange", onRouteChange);
-  return () => window.removeEventListener("hashchange", onRouteChange);
+  window.addEventListener("popstate", onRouteChange);
+  return () => {
+    window.removeEventListener("hashchange", onRouteChange);
+    window.removeEventListener("popstate", onRouteChange);
+  };
 }

@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "check": "node scripts/validate.mjs",
+    "check": "node scripts/validate.mjs && node --test scripts/behavior.test.mjs",
     "serve": "python3 -m http.server 4173"
   }
 }

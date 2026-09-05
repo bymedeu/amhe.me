@@ -1,3 +1,4 @@
+import { calendarDay } from "./data/periods.js";
 import { renderHeader, setupHeader } from "./components/header.js";
 import { renderFooter } from "./components/footer.js";
 import { createI18n } from "./i18n/index.js";
@@ -6,7 +7,7 @@ import { renderProjectsPage, setupProjectsPage } from "./pages/projects.js";
 import { renderProjectDetailPage, setupProjectDetailPage } from "./pages/project-detail.js";
 import { renderResumePage, setupResumePage } from "./pages/resume.js";
 import { setupProjectCards } from "./components/project-card.js";
-import { setupCorona } from "./components/corona.js";
+import { setupCorona, stopCorona } from "./components/corona.js";
 import { getRoute, startRouter } from "./router.js";
 import { setupRevealAnimations } from "./reveal.js";
 import { siteConfig } from "../site.config.js";
@@ -14,6 +15,13 @@ import { siteConfig } from "../site.config.js";
 export function createApp(root) {
   const i18n = createI18n();
   let stopRouter = () => {};
+  let dateTimer;
+  let renderedDay = calendarDay();
+  const refreshDate = () => {
+    if (document.visibilityState === "hidden" || calendarDay() === renderedDay) return;
+    renderedDay = calendarDay();
+    render({ preserveScroll: true });
+  };
 
   function render(options = {}) {
     const previousScroll = options.preserveScroll ? window.scrollY : null;
@@ -68,10 +76,15 @@ export function createApp(root) {
   return {
     start() {
       stopRouter = startRouter(render);
+      dateTimer = window.setInterval(refreshDate, 1000);
+      document.addEventListener("visibilitychange", refreshDate);
       render();
     },
     stop() {
       stopRouter();
+      stopCorona();
+      clearInterval(dateTimer);
+      document.removeEventListener("visibilitychange", refreshDate);
     },
   };
 }

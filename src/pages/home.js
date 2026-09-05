@@ -1,3 +1,4 @@
+import { isCurrent, formatPeriod } from "../data/periods.js";
 import { renderProjectCard } from "../components/project-card.js";
 import { isProjectLanguageTag, projects } from "../data/projects.js";
 import { getLocalized } from "../data/projects.js";
@@ -22,11 +23,9 @@ export function renderHomePage(i18n) {
   const featured = siteConfig.home.featuredProjectIds
     .map((id) => projects.find((project) => project.id === id))
     .filter(Boolean);
-  const currentEntries = [
-    resume.education.find((entry) => entry.id === "epita"),
-    resume.experience.find((entry) => entry.id === "teaching-assistant"),
-    resume.experience.find((entry) => entry.id === "esa"),
-  ].filter(Boolean);
+  const currentEntries = [...resume.experience, ...resume.education]
+    .filter((entry) => isCurrent(entry.period))
+    .sort((a, b) => a.displayOrder - b.displayOrder);
 
   return `
     <section class="home-intro container">
@@ -73,7 +72,7 @@ export function renderHomePage(i18n) {
             <a class="current-row reveal" href="#/resume">
               <span>${entry.organization}</span>
               <strong>${getLocalized(entry.title, language)}</strong>
-              <time>${getLocalized(entry.period, language)}</time>
+              <time>${formatPeriod(entry.period, language)}</time>
             </a>
           `).join("")}
         </div>

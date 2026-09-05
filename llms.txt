@@ -5,10 +5,11 @@
 
 Canonical portfolio: https://amhe.me/
 
-## Current work and education
+## Work and education
 
-- Software Engineering Intern at the European Space Agency (2026–present).
-- Teaching Assistant at EPITA (September 2025–January 2028).
+- Software Engineering Intern at the European Space Agency (July–December 2026; scheduled finish December 15).
+- Teaching Assistant at EPITA (September 2025–August 2026).
+- Back to Basics member (August 2024–September 2026); treasurer through August 2026.
 - Computer Engineering Student at EPITA (2023–2028).
 - Exchange semester at Ewha Womans University (February–June 2025).
 
@@ -23,6 +24,9 @@ Core subjects include Python, C, C++, Java, mathematics, machine learning,
 Linux, algorithms, compilers, networking, testing, and performance analysis.
 
 ## Selected projects
+
+- ESA: C++ software engineering at the European Space Agency, July–December 2026.
+  Open-source publication is planned on ESA’s official GitHub.
 
 - Aurora: From-scratch machine-learning components progressing from numerical
   foundations through autograd, attention, and transformers, with documented
@@ -48,7 +52,7 @@ Linux, algorithms, compilers, networking, testing, and performance analysis.
 - MiniMake: A C implementation of core Make behavior: rule and variable parsing,
   dependency-graph resolution, and selective command execution.
 
-The portfolio contains 26 projects in total. Some academic repositories remain
+The portfolio contains 27 projects in total. Some academic repositories remain
 private to respect EPITA source-distribution and academic-integrity rules; the
 site distinguishes public, private, and school-restricted work.
 

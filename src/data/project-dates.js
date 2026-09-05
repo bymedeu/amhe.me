@@ -1,6 +1,8 @@
+import { formatPeriod } from "./periods.js";
 const projectPeriods = Object.freeze({
+  esa: { start: "2026-07", end: "2026-12-15" },
   mystarceiling: { start: "2024" },
-  aurora: { start: "2026-06", end: "present" },
+  aurora: { start: "2026-06", openEnded: true },
   "word-search-ocr": { start: "2024" },
   "multiplayer-game": { start: "2023-09", end: "2024-06" },
   "c-piscine": { start: "2025-10" },
@@ -24,7 +26,7 @@ const projectPeriods = Object.freeze({
   "snow-plow": { start: "2026-05", end: "2026-07" },
   "comments-platform": { start: "2026-05" },
   "cs50-ai": { start: "2026" },
-  leetcode: { start: "2026-03", end: "present" },
+  leetcode: { start: "2026-03", openEnded: true },
 });
 
 export function getProjectPeriod(projectId) {
@@ -36,30 +38,5 @@ export function getProjectPeriodIds() {
 }
 
 export function formatProjectPeriod(projectId, language) {
-  const period = getProjectPeriod(projectId);
-  if (!period) return "";
-
-  const start = formatDatePoint(period.start, language);
-  if (!period.end || period.end === period.start) return start;
-  if (period.end === "present") {
-    return `${start} — ${language === "fr" ? "aujourd’hui" : "present"}`;
-  }
-
-  const end = formatDatePoint(period.end, language);
-  if (period.start.length === 7 && period.end.length === 7 && period.start.slice(0, 4) === period.end.slice(0, 4)) {
-    const startMonth = formatDatePoint(period.start, language, false);
-    return `${startMonth} — ${end}`;
-  }
-  return `${start} — ${end}`;
-}
-
-function formatDatePoint(value, language, includeYear = true) {
-  if (value.length === 4) return value;
-
-  const [year, month] = value.split("-").map(Number);
-  return new Intl.DateTimeFormat(language === "fr" ? "fr-FR" : "en-GB", {
-    month: "short",
-    ...(includeYear ? { year: "numeric" } : {}),
-    timeZone: "UTC",
-  }).format(new Date(Date.UTC(year, month - 1, 1))).replace(".", "");
+  return formatPeriod(getProjectPeriod(projectId), language);
 }

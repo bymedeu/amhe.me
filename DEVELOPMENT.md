@@ -74,3 +74,19 @@ public interface until they are confirmed.
 
 `content/repository-migration.yml` records the approved private-repository and
 submodule layout used for the EPITA project archive.
+
+## Periods and filters
+
+Résumé periods and project periods use `start`, optional `end`, and an explicit
+`openEnded: true` for ongoing work with no scheduled finish. Dates accept YYYY,
+YYYY-MM, or YYYY-MM-DD. End dates are inclusive in Europe/Paris; display uses
+month precision for exact days. A missing end alone does not imply current work.
+For example, ESA ends internally on 2026-12-15, displayed as December 2026.
+Current roles refresh automatically on calendar rollover and tab visibility.
+
+Project filters use repeated `tag` and `language` parameters with AND semantics.
+`visibility` remains one of all/public/private. Forthcoming ESA source is included
+in non-public results until an actual publication URL is supplied. Update its
+repository access and URL when released.
+
+The existing PDFs are maintained separately from the online résumé.

@@ -1,3 +1,5 @@
+import { isCurrent } from "../data/periods.js";
+import { getProjectPeriod } from "../data/project-dates.js";
 import { icons } from "../components/icons.js";
 import { getLocalized, getProjectById, getProjectName, isProjectLanguageTag } from "../data/projects.js";
 import { projectFilterUrl } from "../router.js";
@@ -99,6 +101,7 @@ async function refreshPublicRepositoryStats(root) {
 }
 
 function renderRepositorySection(project, name, { t, language }) {
+  if (project.repository.access === "forthcoming") return `<p class="container">${t("projects.forthcoming")}</p>`;
   if (project.repository.access === "public") {
     return `
       <section class="repository-panel reveal">
@@ -154,7 +157,7 @@ function renderFact(label, value, tooltip = null) {
 
 function getStatusLabel(project, t) {
   if (project.status === "planned") return t("projects.planned");
-  if (project.status === "active") return t("detail.active");
+  if (isCurrent(getProjectPeriod(project.id))) return t("detail.active");
   return t("detail.completed");
 }
 

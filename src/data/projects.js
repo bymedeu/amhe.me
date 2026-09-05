@@ -8,6 +8,25 @@ const academic = (project) => ({
 
 export const projects = [
   {
+    id: "esa",
+    name: { en: "ESA · C++ Software Engineering", fr: "ESA · Ingénierie logicielle C++" },
+    description: {
+      en: "C++ software engineering at the European Space Agency during a six-month internship.",
+      fr: "Ingénierie logicielle en C++ à l’Agence spatiale européenne dans le cadre d’un stage de six mois.",
+    },
+    context: {
+      en: "Software engineering internship at ESA, July–December 2026. Open-source publication is planned on ESA’s official GitHub.",
+      fr: "Stage en ingénierie logicielle à l’ESA, de juillet à décembre 2026. Publication open source prévue sur le GitHub officiel de l’ESA.",
+    },
+    implementation: {
+      en: ["C++ software development", "Contribution within ESA’s technical-review process"],
+      fr: ["Développement logiciel en C++", "Contribution dans le cadre du processus de revue technique de l’ESA"],
+    },
+    type: "professional", status: "active", duration: { en: "6 months", fr: "6 mois" }, teamSize: null,
+    repository: { access: "forthcoming", url: null },
+    linkedinUrl: null, tags: ["cpp"], art: "stars",
+  },
+  {
     id: "mystarceiling",
     name: "MyStarCeiling",
     description: {

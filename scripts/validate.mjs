@@ -1,4 +1,4 @@
-import { readFile } from "node:fs/promises";
+import { readFile, access } from "node:fs/promises";
 import { projects } from "../src/data/projects.js";
 import { translations } from "../src/i18n/translations.js";
 import { siteConfig } from "../site.config.js";
@@ -6,7 +6,21 @@ import { resume } from "../src/data/resume.js";
 import { projectStats } from "../src/data/github-stats.js";
 import { getProjectPeriod, getProjectPeriodIds } from "../src/data/project-dates.js";
 
+import { dateBoundary } from "../src/data/periods.js";
+
 const errors = [];
+function validatePeriod(period, id) {
+  const validDate = (value) => {
+    if (!/^\d{4}(-\d{2})?(-\d{2})?$/.test(value ?? "")) return false;
+    const day = dateBoundary(value);
+    const parsed = new Date(day + "T12:00:00Z");
+    return !Number.isNaN(parsed.getTime()) && parsed.toISOString().slice(0, 10) === day;
+  };
+  if (!period || !validDate(period.start) || (period.end && !validDate(period.end))
+    || (period.openEnded && period.end) || (period.end && dateBoundary(period.end, true) < dateBoundary(period.start))) {
+    errors.push(`Invalid period: ${id}`);
+  }
+}
 const ids = new Set();
 
 if (!/^\S+@\S+\.\S+$/.test(siteConfig.contact.recruiterAccessEmail)) {
@@ -48,7 +62,7 @@ for (const project of projects) {
     }
   }
 
-  if (!getProjectPeriod(project.id)) errors.push(`${project.id} is missing a project date`);
+  validatePeriod(getProjectPeriod(project.id), project.id);
 }
 
 for (const projectId of getProjectPeriodIds()) {
@@ -82,8 +96,13 @@ for (const section of [resume.experience, resume.education]) {
     if (!Array.isArray(entry.skills) || !entry.skills.length) {
       errors.push(`Résumé entry has no skills: ${entry.id}`);
     }
+    validatePeriod(entry.period, entry.id);
+    if (entry.logo) {
+      try { await access(new URL(`../${entry.logo.src}`, import.meta.url)); }
+      catch { errors.push(`Missing logo: ${entry.id}`); }
+    }
     for (const language of ["en", "fr"]) {
-      if (!entry.period[language] || !entry.title[language]) {
+      if (!entry.title[language]) {
         errors.push(`Incomplete ${language} résumé entry: ${entry.id}`);
       }
       const highlights = entry.highlights[language];
