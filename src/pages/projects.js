@@ -1,7 +1,7 @@
 import { renderProjectCard } from "../components/project-card.js";
 import { getTopicTags, projectLanguageTags, projects } from "../data/projects.js";
 import { projectFilterUrl, parseProjectFilters } from "../router.js";
-import { githubSnapshot, projectStats } from "../data/github-stats.js";
+import { githubSnapshot } from "../data/github-stats.js";
 import { siteConfig } from "../../site.config.js";
 
 import { normalizeFilters, matchingProjects, toggleFilter } from "../data/project-filters.js";
@@ -22,7 +22,6 @@ export function renderProjectIndex(i18n, route) {
   const { t } = i18n;
   const filters = normalizeFilters(route);
   const visibleProjects = matchingProjects(filters);
-  const totalSourceLines = visibleProjects.reduce((sum, project) => sum + (projectStats[project.id]?.codebaseLines ?? 0), 0);
   const control = (key, label, next, active, count, disabled = false, className = "filter-chip") =>
     `<button type="button" data-project-filter data-filter-key="${key}" data-filter-href="${projectFilterUrl(next)}"
       class="${className} ${active ? "active" : ""}" aria-pressed="${active}" ${disabled ? "disabled" : ""}>${label}<span>${count}</span></button>`;
@@ -42,7 +41,7 @@ export function renderProjectIndex(i18n, route) {
     <section class="project-index container">
       <div class="filter-header reveal">
         <div><p class="section-kicker">${t("projects.filter")}</p>
-          <p class="result-count"><span>${t("projects.count")(visibleProjects.length)}</span><i>·</i><span title="${t("projects.sourceLinesNote")}">${t("projects.sourceLines")(totalSourceLines)}</span></p>
+          <p class="result-count">${t("projects.count")(visibleProjects.length)}</p>
         </div>
         <button type="button" data-project-filter data-filter-key="clear" data-filter-href="${projectFilterUrl()}" class="clear-filter">× ${t("projects.clearFilters")}</button>
       </div>

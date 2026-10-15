@@ -7,8 +7,6 @@ import { siteConfig } from "../../site.config.js";
 import { projectStats } from "../data/github-stats.js";
 import { formatProjectPeriod } from "../data/project-dates.js";
 
-const MIN_VISIBLE_SOURCE_LINES = 1000;
-
 export function renderProjectDetailPage(i18n, route) {
   const project = getProjectById(route.projectId);
   if (!project) return renderNotFound(i18n);
@@ -53,7 +51,6 @@ export function renderProjectDetailPage(i18n, route) {
           ${period ? renderFact(t("detail.date"), period) : ""}
           ${duration ? renderFact(t("detail.duration"), duration) : ""}
           ${project.teamSize ? renderFact(t("detail.team"), t("detail.people")(project.teamSize)) : ""}
-          ${stats?.codebaseLines >= MIN_VISIBLE_SOURCE_LINES ? renderFact(t("detail.codebaseSize"), t("detail.lines")(stats.codebaseLines), t("detail.codebaseNote")) : ""}
           ${stats?.stars != null ? renderFact(t("detail.githubStars"), `<span data-github-stars>${new Intl.NumberFormat(language).format(stats.stars)}</span>`) : ""}
           ${renderFact(t("detail.status"), getStatusLabel(project, t))}
         </div>

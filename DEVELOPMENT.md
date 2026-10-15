@@ -48,9 +48,8 @@ workflow continues to refresh that file daily and may include private
 contribution counts without disclosing private source. The source URL is set in
 `site.config.js`; the workflow and its secret remain in the profile repository.
 
-Per-project line counts describe the complete local codebase, including tests
-and supplied academic scaffolding where applicable. They must not be described
-as lines authored by one person.
+Public project views omit combined source-line totals and per-project codebase
+sizes. The language mix displays language names, colours, and percentages.
 
 ## Preview
 
